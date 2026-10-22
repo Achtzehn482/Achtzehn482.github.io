@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F5F3EE" />
+    <script>
+      (() => {
+        if (performance.getEntriesByType('navigation')[0]?.type !== 'reload' || !('scrollRestoration' in history)) return;
+        const previousRestoration = history.scrollRestoration;
+        const originalUrl = location.href;
+        const initialUrl = originalUrl.split('#')[0];
+        const inputs = ['pointerdown', 'keydown', 'wheel', 'touchstart', 'hashchange', 'popstate'];
+        let interacted = false, complete = false, frame = 0;
+        const markInteraction = () => { interacted = true; };
+        const resetTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        const finish = (reset) => {
+          if (complete) return;
+          complete = true;
+          const unchanged = location.href === initialUrl;
+          if (unchanged && originalUrl !== initialUrl) history.replaceState(history.state, '', originalUrl);
+          if (reset && !interacted && unchanged) resetTop();
+          history.scrollRestoration = previousRestoration;
+          cancelAnimationFrame(frame);
+          inputs.forEach(type => window.removeEventListener(type, markInteraction));
+          window.removeEventListener('pageshow', onShow);
+          window.removeEventListener('pagehide', onHide);
+        };
+        const onShow = () => {
+          if (!interacted && location.href === initialUrl) resetTop();
+          frame = requestAnimationFrame(() => finish(true));
+        };
+        const onHide = () => finish(false);
+        // Prevent both reload restoration and a reload's fragment jump before paint.
+        history.scrollRestoration = 'manual';
+        if (originalUrl !== initialUrl) history.replaceState(history.state, '', initialUrl);
+        resetTop();
+        inputs.forEach(type => window.addEventListener(type, markInteraction, { passive: true }));
+        window.addEventListener('pageshow', onShow, { once: true });
+        window.addEventListener('pagehide', onHide, { once: true });
+      })();
+    </script>
+    <meta name="description" content="FLIT，一款约40mm宽的无屏随身捕捉设备。由你决定捕捉什么，让注意到的光线、材质与色彩，成为可以再次回溯的创作素材。Independent Concept Project / 2026." />
+    <title>FLIT — For the things you almost missed.</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="FLIT" />
+    <meta property="og:title" content="FLIT — For the things you almost missed." />
+    <meta property="og:description" content="由你决定，留下此刻。FLIT 无屏随身捕捉设备与 APP 体验。Independent Concept Project / 2026." />
+    <meta property="og:image" content="./assets/share/flit-product-preview.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="自然光下，完整的暖白 FLIT 产品置于混凝土台面上。" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FLIT — For the things you almost missed." />
+    <meta name="twitter:description" content="由你决定，留下此刻。FLIT 无屏随身捕捉设备与 APP 体验。Independent Concept Project / 2026." />
+    <meta name="twitter:image" content="./assets/share/flit-product-preview.jpg" />
+    <meta name="twitter:image:alt" content="自然光下，完整的暖白 FLIT 产品置于混凝土台面上。" />
+    <link rel="icon" type="image/svg+xml" href="./assets/brand/capture-corner.svg" />
+    <link rel="preload" href="./fonts/GeistSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="module" crossorigin src="./assets/index-DGX134rc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BvZczXkD.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
